@@ -56,26 +56,25 @@ const Home = () => {
   };
 
   const handleCompleteTask = async (taskId) => {
-    const taskToEdit = tasks.find((task) => task._id === taskId);
-    
-    if (taskToEdit) {
-      const completedStatus = !taskToEdit.completed;
+    try {
+      
+      const response = await axiosInstance.patch(`/task/update-completion/${taskId}`);
 
-      try {
-        const response = await axiosInstance.patch(`/task/update-task/${taskId}`)
-
-        if (response.status === 200) {
-          setTasks(
-            tasks.map((task) =>
-              task._id === taskId ? { ...task, completed: completedStatus } : task
-            )
-          );
-        }
-      } catch (error) {
-        console.error("Error updating task completion status:", error);
+      if (response.status === 200) {
+      
+        const updatedTask = response.data.task;
+  
+        setTasks(
+          tasks.map((task) =>
+            task._id === taskId ? { ...task, completed: updatedTask.completed } : task
+          )
+        );
       }
+    } catch (error) {
+      console.error("Error updating task completion status:", error);
     }
   };
+  
 
   const handleEditTask = async (taskId) => {
     console.log("Editing task with ID:", taskId);
